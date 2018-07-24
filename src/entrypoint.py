@@ -1,0 +1,19 @@
+import sys
+import os
+
+# Add our application's path to Python's seach path so that it can find 
+# `app` and `flask`.
+sys.path.append("/usr/src/app")
+
+# Change run directory (from `/`) to where our app lives `/usr/src/app` 
+os.chdir("/usr/src/app")
+
+from app import app
+debug_mode = False
+
+debug_mode = (os.environ.get('DEBUG_MODE') == "True")
+
+app.run(
+  debug=debug_mode,
+  host='0.0.0.0', port=80
+  )

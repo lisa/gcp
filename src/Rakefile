@@ -1,0 +1,53 @@
+# Don't judge me
+
+require 'rake'
+require 'json'
+
+CONFIG_FILE = File.join(File.dirname(__FILE__),"..","terraform","gcp.tfvars")
+
+# Read config from gcp.tfvars file (it's JSON, surprise)
+config = JSON.parse(File.read(CONFIG_FILE))
+
+#validate config has the stuff we need
+[ 'gcr_hostname', 'app_image_name', 'project_id' ].each do |key|
+  fail "Aborting: Need '#{key}' in #{config}" unless config.keys.include?(key)
+end
+
+namespace :docker do
+  task :build => [ 'docker:build:python_app' ]
+  namespace :build do
+    desc "Build the Python app, version is APP_VER envvar"
+    task :python_app do
+      fail "Aborting:  Need to define version with APP_VER envvar" unless ENV.keys.include?('APP_VER')
+      tag = ENV['APP_VER']
+      sh "docker build -t #{config['app_image_name']}:#{tag} -t #{config['app_image_name']}:latest ."
+    end
+    
+    desc "Push built image to GCR"
+    task :push => [ 'docker:build:python_app' ] do
+      # 1. Tag
+      # 2. Push
+      tag = if ENV['APP_VER'].nil?
+        warn "Warning: APP_VER not defined, using 'latest' tag"
+        "latset"
+      else
+        ENV['APP_VER']
+      end
+      sh "docker tag #{config['app_image_name']} #{config['gcr_hostname']}/#{config['project_id']}/#{config['app_image_name']}:#{tag}"
+      sh "docker push #{config['gcr_hostname']}/#{config['project_id']}/#{config['app_image_name']}:#{tag}"
+    end
+  end
+  
+  namespace :run do
+    desc "Run the APP_VER tag ver locally"
+    task :python_app => [ 'docker:build:python_app' ] do
+      tag = if ENV['APP_VER'].nil?
+        warn "Warning: APP_VER not defined, using 'latest' tag"
+        "latset"
+      else
+        ENV['APP_VER']
+      end
+      sh "docker run -p 80:80 -e DEBUG_MODE=#{ENV['DEBUG_MODE'] ? 'True' : 'False'} -i #{config['app_image_name']}:#{tag}"
+    end
+  end
+end
