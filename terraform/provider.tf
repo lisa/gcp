@@ -46,6 +46,10 @@ resource "google_project_services" "services" {
 resource "google_project" "project" {
   name = "${var.google_project_name}"
   project_id = "${var.project_id}"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 data "google_project" "project" {}
