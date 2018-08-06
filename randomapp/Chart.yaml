@@ -1,0 +1,9 @@
+---
+  apiVersion: "v1"
+  name: "randomapp"
+  version: "2018.0702"
+  home: "https://github.com/lisa/gcp"
+  maintainers:
+    - name: "Lisa Seelye"
+      url: "https://github.com/lisa/gcp"
+  appVersion: "2018.0702"
