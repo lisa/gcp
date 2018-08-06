@@ -32,7 +32,11 @@ resource "google_container_cluster" "primary" {
       "https://www.googleapis.com/auth/devstorage.read_only",
     ]
   }
-  
+  depends_on = [
+    "google_compute_network.primary_network",
+    "google_service_account.terraform",
+    "google_project_services.services",
+  ]
 }
 
 output "client_certificate" {
