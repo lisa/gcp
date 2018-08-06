@@ -14,17 +14,23 @@ variable "google_project_name" {
   description = "Human name of the project"
 }
 
+variable "google_billing_account" {
+  description = "Google Billing Account for google_project"
+}
+
 provider "google" {
   credentials = "${file("account.json")}"
-  project = "${var.project_id}"
-  region = "${var.gcp_region}"
-  zone = "${var.gcp_zone}"
+  project     = "${var.project_id}"
+  region      = "${var.gcp_region}"
+  zone        = "${var.gcp_zone}"
 }
 
 resource "google_project_services" "services" {
   project = "${var.project_id}"
   services = [
+    "appengine.googleapis.com",
     "bigquery-json.googleapis.com",
+    "cloudbilling.googleapis.com",
     "cloudbuild.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "compute.googleapis.com",
@@ -41,6 +47,10 @@ resource "google_project_services" "services" {
     "serviceusage.googleapis.com",
     "storage-api.googleapis.com",
   ]
+  depends_on = [
+    "google_service_account.terraform",
+  ]
+  
 }
 
 resource "google_project" "project" {
@@ -53,7 +63,9 @@ resource "google_project" "project" {
 }
 
 data "google_project" "project" {}
+  billing_account = "${var.google_billing_account}"
 
-output "project_number" {
-  value = "${data.google_project.project.number}"
+  lifecycle {
+    prevent_destroy = true
+  }
 }
