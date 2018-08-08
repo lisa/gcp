@@ -62,7 +62,7 @@ resource "google_project" "project" {
   }
 }
 
-data "google_project" "project" {}
+data "google_project" "project" {
   billing_account = "${var.google_billing_account}"
 
   lifecycle {
