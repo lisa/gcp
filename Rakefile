@@ -101,7 +101,7 @@ namespace :bootstrap do
       # Run: 
       curl https://sdk.cloud.google.com | bash
       exec -l \$SHELL
-      gcloud init --disable-prompts
+      gcloud init
       INSTALL_GCLOUD
     end
     true
