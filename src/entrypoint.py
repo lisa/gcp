@@ -13,7 +13,11 @@ debug_mode = False
 
 debug_mode = (os.environ.get('DEBUG_MODE') == "True")
 
+listen_port = 80
+if "LISTEN_PORT" in os.environ:
+  listen_port = int(os.environ.get('LISTEN_PORT'))
+
 app.run(
   debug=debug_mode,
-  host='0.0.0.0', port=80
+  host='0.0.0.0', port=listen_port
   )

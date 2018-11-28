@@ -15,7 +15,8 @@ EXPOSE 80
 MAINTAINER Lisa Seelye <lisa@thedoh.com>
 
 ENV \
-  DEBUG_MODE=False
+  DEBUG_MODE=False \
+  LISTEN_PORT=80
 
 WORKDIR /usr/src/app
 COPY --from=0 /tmp/usr/src/app .
